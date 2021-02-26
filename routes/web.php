@@ -18,7 +18,7 @@ Auth::routes(['register' => false, 'reset' => false, 'verify' => false]);
 Route::group(['middleware' => ['auth'], 'guard' => 'auth'], function () {
 
 // PDF Stuff
-    Route::group(['prefix' => 'dompdf'], function () {
+    Route::group(['prefix' => 'pdf'], function () {
         Route::get('generate/{view}', 'PDFController@generate');
         Route::get('preview/{view}', 'PDFController@preview');
     });

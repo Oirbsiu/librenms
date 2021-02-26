@@ -32,11 +32,11 @@ class PDFController extends Controller
 				'route'     => $route,
 				'date'      => date('d/m/Y'),
 				'json'      => json_decode($json),
-				'header_logo' => \LibreNMS\Config::get('dompdf.header_logo'),
-				'header_text' => \LibreNMS\Config::get('dompdf.header_text'),
-				'footer_logo' => \LibreNMS\Config::get('dompdf.footer_logo'),
-				'owner'		  => \LibreNMS\Config::get('dompdf.doc_owner'),
-				'level'		  => \LibreNMS\Config::get('dompdf.doc_level')
+				'header_logo' => \LibreNMS\Config::get('pdf.header_logo'),
+				'header_text' => \LibreNMS\Config::get('pdf.header_text'),
+				'footer_logo' => \LibreNMS\Config::get('pdf.footer_logo'),
+				'owner'		  => \LibreNMS\Config::get('pdf.doc_owner'),
+				'level'		  => \LibreNMS\Config::get('pdf.doc_level')
 			];
 			// display Preview of report using blade template
 			return view($view, $data);
@@ -60,11 +60,11 @@ class PDFController extends Controller
 				'path' 	=> $clean_path,
 				'date'      => date('d/m/Y'),
 				'json'      => json_decode($json),
-				'header_logo' => \LibreNMS\Config::get('dompdf.header_logo'),
-				'header_text' => \LibreNMS\Config::get('dompdf.header_text'),
-				'footer_logo' => \LibreNMS\Config::get('dompdf.footer_logo'),
-				'owner'		  => \LibreNMS\Config::get('dompdf.doc_owner'),
-				'level'		  => \LibreNMS\Config::get('dompdf.doc_level')
+				'header_logo' => \LibreNMS\Config::get('pdf.header_logo'),
+				'header_text' => \LibreNMS\Config::get('pdf.header_text'),
+				'footer_logo' => \LibreNMS\Config::get('pdf.footer_logo'),
+				'owner'		  => \LibreNMS\Config::get('pdf.doc_owner'),
+				'level'		  => \LibreNMS\Config::get('pdf.doc_level')
 			];
 
 			// generate PDF document from blade template and download to browser
