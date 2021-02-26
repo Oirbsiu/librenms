@@ -17,6 +17,12 @@ Auth::routes(['register' => false, 'reset' => false, 'verify' => false]);
 // WebUI
 Route::group(['middleware' => ['auth'], 'guard' => 'auth'], function () {
 
+// PDF Stuff
+    Route::group(['prefix' => 'dompdf'], function () {
+        Route::get('generate/{view}', 'PDFController@generate');
+        Route::get('preview/{view}', 'PDFController@preview');
+    });
+
     // pages
     Route::resource('device-groups', 'DeviceGroupController');
     Route::group(['prefix' => 'poller'], function () {
