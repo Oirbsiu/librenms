@@ -18,10 +18,12 @@ Auth::routes(['register' => false, 'reset' => false, 'verify' => false]);
 Route::group(['middleware' => ['auth'], 'guard' => 'auth'], function () {
 
 // PDF Stuff
-    Route::group(['prefix' => 'pdf'], function () {
-        Route::get('generate/{view}', 'PDFController@generate');
-        Route::get('preview/{view}', 'PDFController@preview');
-    });
+	Route::group(['prefix' => 'pdf'], function () {
+		Route::get('generate/{view}', 'PDFController@generate');
+		Route::get('preview/{view}',  'PDFController@preview');
+		Route::get('alerts{params}', 'PDFController@alerts')->where('params','.*');
+		Route::post('previewAlerts/', 'PDFController@previewAlerts');
+	});
 
     // pages
     Route::resource('device-groups', 'DeviceGroupController');

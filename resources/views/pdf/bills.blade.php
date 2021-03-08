@@ -1,12 +1,15 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE HTML>
+<html >
 <head>
-	<title>{{$title}}</title>
+	<title>{{ $pagetitle }}</title>
+	<base href="{{ LibreNMS\Config::get('base_url') }}" />
 	<link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
 	<link href="{{ asset('css/styles.css') }}" rel="stylesheet" type="text/css">
 	<link href="{{ asset('css/jquery.bootgrid.min.css') }}" rel="stylesheet" type="text/css">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
 	<style>
-	   @page {
+		@page {
 			margin: 0px 20px;
 		}
 
@@ -17,7 +20,7 @@
 			margin-right: -5px;
 			margin-bottom: 2cm;
 		}
-	
+
 		/** Define the header rules **/
 		header {
 			position: fixed;
@@ -54,13 +57,13 @@
 			padding-top:5px;
 		}
 	</style>
+	
 </head>
 <body>
-</body>
 	<header>
 		<div id="header">
 			<div class="container-fluid">
-				<table class="table table-hover bootgrid-table">
+				<table class="table bootgrid-table">
 					<tr>
 						<td id="header_text" class="text-center" width="100%">{{ $header_text }}</td>
 					</tr>
@@ -68,20 +71,6 @@
 			</div>
 		</div>
 	</header>
-	<footer>
-		<div id="footer">
-			<div class="container-fluid">
-				<table class="borderless">
-					<tr>
-						<td id="Footer_date" class="text-left" width="100">{{ date('d-m-Y') }}</td>
-						<td id="Footer_owner" class="text-left" width="150">{{ $owner }}</td>
-						<td id="Footer_security_Level" class="text-left" width="150">{{ $level }}</td>
-						<td></td>
-					</tr>
-				</table>
-			</div>
-		</div>
-	</footer>
 <br>
 <div class="container-fluid">
 	<div class="row">
@@ -140,4 +129,20 @@
 		</div>
 	</div>
 </div>
+	<footer>
+		<div id="footer">
+			<div class="container-fluid">
+				<table class="borderless">
+					<tr>
+						<td id="Footer_date" class="text-left" width="100">{{ date('d-m-Y') }}</td>
+						<td id="Footer_owner" class="text-left" width="150">{{ $owner }}</td>
+						<td id="Footer_security_Level" class="text-left" width="150">{{ $level }}</td>
+						<td></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</footer>
+
+
 </html>

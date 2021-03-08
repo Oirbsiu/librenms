@@ -162,7 +162,8 @@ $common_output[] = '<div class="form-group"> \
         max = high - low;
         search = $(\'.search-field\').val();
 
-        $(".pdf-export").html("<a href=\'pdf.php?report=alert-log&device_id=' . $_POST['device_id'] . '&string=" + search + "&results=" + max + "&start=" + low + "\'><i class=\'fa fa-heartbeat fa-lg icon-theme\' aria-hidden=\'true\'></i> Export to pdf</a>");
+//		$(".pdf-export").html("<a href=\'pdf/alerts?report=alert-log&device_id=' . $_POST['device_id'] . '&string=" + search + "&results=" + max + "&start=" + low + "\'><i class=\'fa fa-heartbeat fa-lg icon-theme\' aria-hidden=\'true\'></i> Export to pdf</a>");
+		$(".pdf-export").html("<button type=\"button\" class=\"pdf-export-button btn btn-default btn-sm\" ><i class=\"fa fa-heartbeat fa-lg icon-theme\"></i> Export to pdf</button>");
 
         grid.find(".incident-toggle").each(function () {
             $(this).parent().addClass(\'incident-toggle-td\');
@@ -205,5 +206,43 @@ $common_output[] = '<div class="form-group"> \
     }).on(\'select2:select\', function (e) {
         $(\'#hostname\').val(e.params.data.text);
     });
+
+	$(\'.pdf-export\').on(\'click\', \'.pdf-export-button\', function() {
+		var results = $("div.infos").text().split(" ");
+		low = results[1] - 1;
+		high = results[3];
+		max = high - low;
+		fileName = "AlertReport.pdf";
+		search = $(\'.search-field\').val();
+		data={ 
+				device_id: \'' . htmlspecialchars($_POST['device_id']) . '\',
+				string: search,
+				results: max,
+				start: low,
+				report: \'alert-log\'
+			};
+		url = \'/pdf/previewAlerts\';
+
+		fetch(url, {
+			body: JSON.stringify(data),
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json; charset=utf-8",
+				\'X-CSRF-TOKEN\': $(\'meta[name="csrf-token"]\').attr(\'content\')
+			},
+		})
+		.then(response => response.blob())
+		.then(response => {
+			const blob = new Blob([response], {type: "application/pdf"});
+			const downloadUrl = URL.createObjectURL(blob);
+			const a = document.createElement("a");
+			a.href = downloadUrl;
+			a.download = fileName;
+			document.body.appendChild(a);
+			a.click();
+			window.URL.revokeObjectURL(blob);
+		});	
+	});
+
 </script>
 ';

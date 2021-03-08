@@ -255,7 +255,7 @@ return [
 		/*
 		 * DomPDF
 		 */
-		'DOMPDF' => Barryvdh\DomPDF\Facade::class,
+		'PDF' => Barryvdh\DomPDF\Facade::class,
 	],
 
 ];
