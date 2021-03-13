@@ -123,7 +123,7 @@ class PDFController extends Controller
 		}
 	}
 
-	public function Alerts(Request $request){
+	public function ListAlerts(Request $request){
 
 		$device_id 	= $request->input('device_id');
 		$string		= $request->input('string'); 
