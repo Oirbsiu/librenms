@@ -175,7 +175,7 @@ class AlertLogs
 					if (in_array($k, ['device_id', 'sysObjectID', 'sysDescr', 'location_id'])) {
 						continue;
 					}
-					if (! empty($v) && str_i_contains($k, ['id', 'desc', 'msg', 'last'])) {
+					if (! empty($v) && $Functions->str_i_contains($k, ['id', 'desc', 'msg', 'last'])) {
 						$fault_detail_data[] = "$k => '$v'";
 					}
 				}

@@ -123,7 +123,7 @@ class PDFController extends Controller
 		}
 	}
 
-	public function ListAlerts(Request $request){
+	public function Alerts(Request $request){
 
 		$device_id 	= $request->input('device_id');
 		$string		= $request->input('string'); 
@@ -210,7 +210,7 @@ class PDFController extends Controller
 		return $pdf->stream();
 	}
 
-	public function alerts(Request $request){
+	public function Getalerts(Request $request){
 		$device_id 	= $request->input('device_id');
 		$string		= $request->input('string'); 
 		$results	= $request->input('results');

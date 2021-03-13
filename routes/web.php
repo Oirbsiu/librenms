@@ -21,8 +21,8 @@ Route::group(['middleware' => ['auth'], 'guard' => 'auth'], function () {
 	Route::group(['prefix' => 'pdf'], function () {
 		Route::get('generate/{view}', 'PDFController@generate');
 		Route::get('preview/{view}',  'PDFController@preview');
-		Route::get('alerts{params}', 'PDFController@alerts')->where('params','.*');
-		Route::post('Alerts/', 'PDFController@ListAlerts');
+		Route::get('alerts{params}', 'PDFController@Getalerts')->where('params','.*');
+		Route::post('Alerts/', 'PDFController@Alerts');
 	});
 
     // pages
