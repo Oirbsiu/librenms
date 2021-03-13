@@ -221,7 +221,7 @@ $common_output[] = '<div class="form-group"> \
 				start: low,
 				report: \'alert-log\'
 			};
-		url = \'/pdf/previewAlerts\';
+		url = \'/pdf/Alerts\';
 
 		fetch(url, {
 			body: JSON.stringify(data),

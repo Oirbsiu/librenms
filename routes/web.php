@@ -22,7 +22,7 @@ Route::group(['middleware' => ['auth'], 'guard' => 'auth'], function () {
 		Route::get('generate/{view}', 'PDFController@generate');
 		Route::get('preview/{view}',  'PDFController@preview');
 		Route::get('alerts{params}', 'PDFController@alerts')->where('params','.*');
-		Route::post('previewAlerts/', 'PDFController@previewAlerts');
+		Route::post('Alerts/', 'PDFController@Alerts');
 	});
 
     // pages
