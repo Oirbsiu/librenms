@@ -11,10 +11,9 @@ use App\Models\AuthLog;
 use App\Models\AlertLog;
 use Illuminate\Support\Facades\DB;
 use LibreNMS\Alert\AlertLogs;
-use Illuminate\Support\Facades\App;
+use LibreNMS\Reporting\Bills;
 
-require '/opt/librenms/includes/init.php';
-require_once '/opt/librenms/includes/html/functions.inc.php';
+use Illuminate\Support\Facades\App;
 
 class PDFController extends Controller
 {
@@ -27,25 +26,46 @@ class PDFController extends Controller
 
 		$header_logo = \LibreNMS\Config::get('dompdf.header_logo');
 		$footer_logo = \LibreNMS\Config::get('dompdf.footer_logo');
+
+		$params = array(
+			"period" 		=> 'prev', 
+			"bill_type" 	=> '', 
+			"state" 		=> '',
+			"searchPhrase"	=> '',
+			"rowCount"		=> 50,
+			"current"		=> 1
+		);
+
+		// Define Class based on route 
+		$className = 'LibreNMS\\Reporting\\' . ucfirst($clean_path);
 		
+
 		// Validate that the view exists 
 		if (view()->exists($view)) {
-			// Run report and return JSON object - saved to $json
-			include_once "/opt/librenms/includes/html/reports/$clean_path.pdf.inc.php";
+			$Report = new $className;
+			// Build list - list is returned in response as json - $response['json']
+			$repsonse	= $Report->get_list($params);
+			$params['total'] = $repsonse['total'];
+			
+			// iterate through json list and expand links, add formating etc.
+			$json	= $Report->expand_list($repsonse['json'], $params);
+			$baseURL = \LibreNMS\Config::get('base_url');
 			
 			$data = [
-				'path'      => $clean_path,
-				'route'     => $route,
-				'date'      => date('d/m/Y'),
-				'json'      => json_decode($json),
-				'header_logo' => \LibreNMS\Config::get('pdf.header_logo'),
-				'header_text' => \LibreNMS\Config::get('pdf.header_text'),
-				'footer_logo' => \LibreNMS\Config::get('pdf.footer_logo'),
-				'owner'		  => \LibreNMS\Config::get('pdf.doc_owner'),
-				'level'		  => \LibreNMS\Config::get('pdf.doc_level')
+				'path'			=> $clean_path,
+				'route'			=> $route,
+				'date'			=> date('d/m/Y'),
+				'pagetitle'		=> \LibreNMS\Config::get('pdf.header_text'),
+				'json'			=> json_decode($json),
+				'baseURL'		=> $baseURL,
+				'header_logo'	=> \LibreNMS\Config::get('pdf.header_logo'),
+				'header_text'	=> \LibreNMS\Config::get('pdf.header_text'),
+				'footer_logo'	=> \LibreNMS\Config::get('pdf.footer_logo'),
+				'owner'			=> \LibreNMS\Config::get('pdf.doc_owner'),
+				'level'			=> \LibreNMS\Config::get('pdf.doc_level')
 			];
-			// display Preview of report using blade template
-			return view($view, $data);
+			//display Preview of report using blade template
+			 return view($view, $data);
 		} else {
 			 abort(404);
 		}
@@ -55,24 +75,44 @@ class PDFController extends Controller
 		$clean_path = \LibreNMS\Util\Clean::fileName($path);
 		$view =  'pdf.'. $clean_path;
 		
+		$header_logo = \LibreNMS\Config::get('dompdf.header_logo');
 		$footer_logo = \LibreNMS\Config::get('dompdf.footer_logo');
+
+		$params = array(
+			"period" 		=> 'prev', 
+			"bill_type" 	=> '', 
+			"state" 		=> '',
+			"searchPhrase"	=> '',
+			"rowCount"		=> 50,
+			"current"		=> 1
+		);
+
+		// Define Class based on route 
+		$className = 'LibreNMS\\Reporting\\' . ucfirst($clean_path);
+		
 		
 		// Validate that the view exists 
 		if (view()->exists($view)) {
-			// Run report and return JSON object - saved to $json
-			include_once "/opt/librenms/includes/html/reports/$clean_path.pdf.inc.php";
+			$Report = new $className;
+			// Build list - list is returned in response as json - $response['json']
+			$repsonse	= $Report->get_list($params);
+			$params['total'] = $repsonse['total'];
 			
+			// iterate through json list and expand links, add formating etc.
+			$json	= $Report->expand_list($repsonse['json'], $params);
 			$data = [
 				'path' 	=> $clean_path,
 				'date'      => date('d/m/Y'),
 				'json'      => json_decode($json),
+				'pagetitle' => \LibreNMS\Config::get('pdf.header_text'),
+				'baseURL'		=> \LibreNMS\Config::get('base_url'),
 				'header_logo' => \LibreNMS\Config::get('pdf.header_logo'),
 				'header_text' => \LibreNMS\Config::get('pdf.header_text'),
 				'footer_logo' => \LibreNMS\Config::get('pdf.footer_logo'),
 				'owner'		  => \LibreNMS\Config::get('pdf.doc_owner'),
 				'level'		  => \LibreNMS\Config::get('pdf.doc_level')
 			];
-
+			
 			// generate PDF document from blade template and download to browser
 			$download_pdf = $view . "_download"; 
 			$pdf = PDF::loadView($download_pdf, $data)->setPaper('a4', 'landscape');
@@ -90,9 +130,10 @@ class PDFController extends Controller
 		$results	= $request->input('results');
 		$start		= $request->input('start');
 		$report		= $request->input('report');
+		$rule_id	= $request->input('rule_id');
 
 		if (isset($results) && is_numeric($results)) {
-			$numresults = mres($results);
+			$numresults = $results;
 		} else {
 			$numresults = 250;
 		}
@@ -133,18 +174,31 @@ class PDFController extends Controller
 
 		// probably a better solution to this but it works.....
 		$json = json_decode($query->toJson());
-		$show_links = false;
+
+		$params = array(
+			"rule_id" 		=> $rule_id, 
+			"device_id" 	=> $device_id, 
+			"show_links"	=> false
+		);
+		$className = 'LibreNMS\\Alert\\AlertLogs';
+		$AlertLog = new $className;
+		
 		foreach($json as $key => $alert) {
-			$fault_detail = AlertLogs::alert_details($alert->rule_id, $alert->device_id, $show_links);
+			$params = array(
+				"rule_id" 		=> $alert->rule_id, 
+				"device_id" 	=> $alert->device_id, 
+				"show_links"	=> false
+			);
+			$fault_detail = $AlertLog->alert_details($params);
 			$json[$key]->faultDetails = $fault_detail;
 		}
 
 		$data = [
-			'path'			=> $clean_path,
 			'date'			=> date('d/m/Y'),
 			'json'			=> $json,
-			'pagetitle'			=> 'Alert Logs',
+			'pagetitle'		=> 'Alert Logs',
 			'header_logo'	=> \LibreNMS\Config::get('pdf.header_logo'),
+			'baseURL'		=> \LibreNMS\Config::get('base_url'),
 			'header_text'	=> \LibreNMS\Config::get('pdf.header_text'),
 			'footer_logo'	=> \LibreNMS\Config::get('pdf.footer_logo'),
 			'owner'			=> \LibreNMS\Config::get('pdf.doc_owner'),
@@ -154,8 +208,6 @@ class PDFController extends Controller
 		$returnHTML = view('pdf.alertlog')->with($data)->render();
 		$pdf = PDF::loadView('pdf.alertlog', $data)->setPaper('a4', 'landscape');
 		return $pdf->stream();
-
-
 	}
 
 	public function alerts(Request $request){
@@ -166,11 +218,11 @@ class PDFController extends Controller
 		$report		= $request->input('report');
 
 		if (isset($results) && is_numeric($results)) {
-			$numresults = mres($results);
+			$numresults = $results;
 		} else {
 			$numresults = 250;
 		}
-		
+
 		// Build Base SQL Query
 		$date_format = \LibreNMS\Config::get('dateformat.mysql.compact');
 		$query = AlertLog::query();
@@ -208,15 +260,25 @@ class PDFController extends Controller
 		// probably a better solution to this but it works.....
 		$json = json_decode($query->toJson());
 		$show_links = false;
+
+		$className = 'LibreNMS\\Alert\\AlertLogs';
+		$AlertLog = new $className;
+		
 		foreach($json as $key => $alert) {
-			$fault_detail = AlertLogs::alert_details($alert->rule_id, $alert->device_id, $show_links);
+			$params = array(
+				"rule_id" 		=> $alert->rule_id, 
+				"device_id" 	=> $alert->device_id, 
+				"show_links"	=> false
+			);
+			$fault_detail = $AlertLog->alert_details($params);
 			$json[$key]->faultDetails = $fault_detail;
 		}
+
 		$data = [
-			'path'			=> $clean_path,
 			'date'			=> date('d/m/Y'),
 			'json'			=> $json,
 			'pagetitle'			=> 'Alert Logs',
+			'baseURL'		=> \LibreNMS\Config::get('base_url'),
 			'header_logo'	=> \LibreNMS\Config::get('pdf.header_logo'),
 			'header_text'	=> \LibreNMS\Config::get('pdf.header_text'),
 			'footer_logo'	=> \LibreNMS\Config::get('pdf.footer_logo'),
@@ -226,8 +288,6 @@ class PDFController extends Controller
 		$returnHTML = view('pdf.alertlog')->with($data)->render();
 		$pdf = PDF::loadView('pdf.alertlog', $data)->setPaper('a4', 'landscape');
 		return $pdf->stream();
-
-
 	}
 
 	

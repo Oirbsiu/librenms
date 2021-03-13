@@ -241,7 +241,11 @@ $common_output[] = '<div class="form-group"> \
 			document.body.appendChild(a);
 			a.click();
 			window.URL.revokeObjectURL(blob);
+		})
+		.catch(function(err) {
+			console.log(\'Fetch Error :-S\', err);
 		});	
+		
 	});
 
 </script>

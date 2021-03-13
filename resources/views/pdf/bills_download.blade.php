@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>{{$title}}</title>
-	<link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
-	<link href="{{ asset('css/styles.css') }}" rel="stylesheet" type="text/css">
-	<link href="{{ asset('css/jquery.bootgrid.min.css') }}" rel="stylesheet" type="text/css">
+	<title>{{$pagetitle}}</title>
+	<base href="{!! $baseURL !!}" />
+	<link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+	<link href="/css/styles.css" rel="stylesheet" type="text/css">
+	<link href="/css/jquery.bootgrid.min.css" rel="stylesheet" type="text/css">
+
 
 	<style>
 	   @page {
@@ -54,13 +56,242 @@
 			border: none;
 			padding-top:5px;
 		}
+		.page-break {
+			page-break-after: always;
+			padding-top:5px;
+		}
+
+
+		/* Styling an indeterminate progress bar */
+
+		progress:not(value) {
+		  /* Add your styles here. As part of this walkthrough we will focus only on determinate progress bars. */
+		}
+
+		/* Styling the determinate progress element */
+
+		progress[value] {
+			/* Get rid of the default appearance */
+			appearance: none;
+
+			/* This unfortunately leaves a trail of border behind in Firefox and Opera. We can remove that by setting the border to none. */
+			border: none;
+
+			/* Add dimensions */
+			width: 100%; height: 20px;
+
+			/* Although firefox doesn't provide any additional pseudo class to style the progress element container, any style applied here works on the container. */
+			background-color: whiteSmoke;
+			border-radius: 3px;
+			box-shadow: 0 2px 3px rgba(0,0,0,.5) inset;
+
+			/* Of all IE, only IE10 supports progress element that too partially. It only allows to change the background-color of the progress value using the 'color' attribute. */
+			color: royalblue;
+
+			position: relative;
+			margin: 0 0 1.5em; 
+		}
+
+		/*
+		Webkit browsers provide two pseudo classes that can be use to style HTML5 progress element.
+		-webkit-progress-bar -> To style the progress element container
+		-webkit-progress-value -> To style the progress element value.
+		*/
+
+		progress[value]::-webkit-progress-bar {
+			background-color: whiteSmoke;
+			border-radius: 3px;
+			box-shadow: 0 2px 3px rgba(0,0,0,.5) inset;
+		}
+
+		progress[value]::-webkit-progress-value {
+			position: relative;
+
+			background-size: 35px 20px, 100% 100%, 100% 100%;
+			border-radius:3px;
+
+			/* Let's animate this */
+			animation: animate-stripes 5s linear infinite;
+		}
+
+		@keyframes animate-stripes { 100% { background-position: -100px 0; } }
+
+		/* Let's spice up things little bit by using pseudo elements. */
+
+		progress[value]::-webkit-progress-value:after {
+			/* Only webkit/blink browsers understand pseudo elements on pseudo classes. A rare phenomenon! */
+			content: '';
+			position: absolute;
+
+			width:5px; height:5px;
+			top:7px; right:7px;
+
+			background-color: white;
+			border-radius: 100%;
+		}
+
+		/* Firefox provides a single pseudo class to style the progress element value and not for container. -moz-progress-bar */
+
+		progress[value]::-moz-progress-bar {
+			/* Gradient background with Stripes */
+			background-image:
+			-moz-linear-gradient( 135deg,
+				transparent,
+				transparent 33%,
+				rgba(0,0,0,.1) 33%,
+				rgba(0,0,0,.1) 66%,
+				transparent 66%),
+			-moz-linear-gradient( top,
+				rgba(255, 255, 255, .25),
+				rgba(0,0,0,.2)),
+			 -moz-linear-gradient( left, #09c, #f44);
+		
+			background-size: 35px 20px, 100% 100%, 100% 100%;
+			border-radius:3px;
+		
+			/* Firefox doesn't support CSS3 keyframe animations on progress element. Hence, we did not include animate-stripes in this code block */
+		}
+
+		/* Fallback technique styles */
+		.progress-bar {
+			background-color: whiteSmoke;
+			border-radius: 3px;
+			box-shadow: 0 2px 3px rgba(0,0,0,.5) inset;
+
+			/* Dimensions should be similar to the parent progress element. */
+			width: 100%; height:20px;
+		}
+
+		.progress-bar span {
+			background-color: royalblue;
+			border-radius: 3px;
+			display: block;
+			text-indent: -9999px;
+		}
+
+		p[data-value] { 
+			position: relative; 
+		}
+
+		/* The percentage will automatically fall in place as soon as we make the width fluid. Now making widths fluid. */
+
+		p[data-value]:after {
+			content: attr(data-value) '%';
+			position: absolute; left:50px;
+		}
+
+
+
+
+
+		.html5::-webkit-progress-value,
+		.python::-webkit-progress-value  {
+			/* Gradient background with Stripes */
+			background-image:
+			-webkit-linear-gradient( 135deg,
+				transparent,
+				transparent 33%,
+				rgba(0,0,0,.1) 33%,
+				rgba(0,0,0,.1) 66%,
+				transparent 66%),
+			-webkit-linear-gradient( top,
+				rgba(255, 255, 255, .25),
+				rgba(0,0,0,.2)),
+			 -webkit-linear-gradient( left, #09c, #f44);
+		}
+
+		.css3::-webkit-progress-value,
+		.php::-webkit-progress-value 
+		{
+			/* Gradient background with Stripes */
+			background-image:
+			-webkit-linear-gradient( 135deg,
+				transparent,
+				transparent 33%,
+				rgba(0,0,0,.1) 33%,
+				rgba(0,0,0,.1) 66%,
+				transparent 66%),
+			-webkit-linear-gradient( top,
+				rgba(255, 255, 255, .25),
+				rgba(0,0,0,.2)),
+			 -webkit-linear-gradient( left, #09c, #ff0);
+		}
+
+		.jquery::-webkit-progress-value,
+		.node-js::-webkit-progress-value 
+		{
+			/* Gradient background with Stripes */
+			background-image:
+			-webkit-linear-gradient( 135deg,
+				transparent,
+				transparent 33%,
+				rgba(0,0,0,.1) 33%,
+				rgba(0,0,0,.1) 66%,
+				transparent 66%),
+			-webkit-linear-gradient( top,
+				rgba(255, 255, 255, .25),
+				rgba(0,0,0,.2)),
+			 -webkit-linear-gradient( left, #09c, #690);
+		}
+
+		/* Similarly, for Mozillaa. Unfortunately combining the styles for different browsers will break every other browser. Hence, we need a separate block. */
+
+		.html5::-moz-progress-bar,
+		.php::-moz-progress-bar {
+			/* Gradient background with Stripes */
+			background-image:
+			-moz-linear-gradient( 135deg,
+				transparent,
+				transparent 33%,
+				rgba(0,0,0,.1) 33%,
+				rgba(0,0,0,.1) 66%,
+				transparent 66%),
+			-moz-linear-gradient( top,
+				rgba(255, 255, 255, .25),
+				rgba(0,0,0,.2)),
+			 -moz-linear-gradient( left, #09c, #f44);
+		}
+
+		.css3::-moz-progress-bar,
+		.php::-moz-progress-bar {
+		{
+			/* Gradient background with Stripes */
+			background-image:
+			-moz-linear-gradient( 135deg,
+				transparent,
+				transparent 33%,
+				rgba(0,0,0,.1) 33%,
+				rgba(0,0,0,.1) 66%,
+				transparent 66%),
+			-moz-linear-gradient( top,
+				rgba(255, 255, 255, .25),
+				rgba(0,0,0,.2)),
+			 -moz-linear-gradient( left, #09c, #ff0);
+		}
+
+		.jquery::-moz-progress-bar,
+		.node-js::-moz-progress-bar {
+			/* Gradient background with Stripes */
+			background-image:
+			-moz-linear-gradient( 135deg,
+				transparent,
+				transparent 33%,
+				rgba(0,0,0,.1) 33%,
+				rgba(0,0,0,.1) 66%,
+				transparent 66%),
+			-moz-linear-gradient( top,
+				rgba(255, 255, 255, .25),
+				rgba(0,0,0,.2)),
+			 -moz-linear-gradient( left, #09c, #690);
+		}
+
 	</style>
 </head>
 <body>
 	<header>
 		<div id="header">
 			<div class="container-fluid">
-				<table class="table table-hover bootgrid-table">
+				<table class="table bootgrid-table">
 					<tr>
 						<td id="header_text" class="text-center" width="100%">{{ $header_text }}</td>
 					</tr>
@@ -69,6 +300,39 @@
 		</div>
 	</header>
 
+<br>
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="panel panel-default panel-condensed">
+
+				<div class="table-responsive">
+					@include('pdf.tableHeader')
+						@foreach($json as $index => $row)
+							<tr data-row-id="$index" >
+							@foreach ($row as $key => $value)
+								<?php if(property_exists($row, $key)) : ?>
+									<td class="text-left" style="">{!! $value !!}</td>
+								<?php else : ?>
+									<td class="text-left" style=""></td>
+								<?php endif; ?>
+  							@endforeach
+							@if( $index > 0 && $index % 5 == 0)
+							</tr>
+						</tbody>
+					</table>
+					<div class="page-break"></div>
+					@include('pdf.tableHeader')
+							@else
+							</tr>
+							@endif
+						@endforeach
+						</tbody>
+					</table>
+				</div>
+			</div>
+	</div>
+</div>
 	<footer>
 		<div id="footer">
 			<div class="container-fluid">
@@ -86,48 +350,6 @@
 			</div>
 		</div>
 	</footer>	
-<br>
-<div class="container-fluid">
-	<div class="row">
-		<div class="panel panel-default panel-condensed">
-			<div class="table-responsive">
-				<table class="table table-hover bootgrid-table" id="bills-list" aria-busy="false" >
-					<thead>
-						<tr>
-							<th data-column-id="bill_name" class="text-left" style="">Billing name</th>
-							<th data-column-id="notes" class="text-left" style=""></th>
-							<th data-column-id="bill_type" class="text-left" style="">Type</th>
-							<th data-column-id="bill_allowed" class="text-left" style="">Allowed</th>
-							<th data-column-id="total_data_in" class="text-left" style="">Inbound</th>
-							<th data-column-id="total_data_out" class="text-left" style="">Outbound</th>
-							<th data-column-id="total_data" class="text-left" style="">Total</th>
-							<th data-column-id="rate_95th" class="text-left" style="">95th Percentile</th>
-							<th data-column-id="overusage" class="text-left" style="">Overusage</th>
-							<th data-column-id="predicted" class="text-left" style="">Predicted</th>
-						</tr>
-					</thead>
-					<tbody>
-
-					@foreach($json as  $row)
-						<tr data-row-id="0">
-							<td class="text-left" style="">{!!$row->bill_name!!}</td>
-							<td class="text-left" style="">{!!$row->notes!!}</td>
-							<td class="text-left" style="">{!!$row->bill_type!!}</td>
-							<td class="text-right" style="">{!!$row->bill_allowed!!}</td>
-							<td class="text-right" style="">{!!$row->total_data_in!!}</td>
-							<td class="text-right" style="">{!!$row->total_data_out!!}</td>
-							<td class="text-right" style="">{!!$row->total_data!!}</td>
-							<td class="text-right" style="">{!!$row->rate_95th!!}</td>
-							<td class="text-center" style="">{!!$row->overusage!!}</td>
-							<td class="text-center" style="">{!!$row->predicted!!}</td>
-						</tr>
-					@endforeach
-					</tbody>
-				</table>
-			</div>
-		</div>
-	</div>
-</div>
 </body>
 </html>
 
